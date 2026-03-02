@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ReciepApp.models import Reciep
+from ReciepApp.models import Recipe
 
 # Register your models here.
-admin.site.register(Reciep)
+admin.site.register(Recipe)

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liste des recettes</title>
+</head>
+<body>
+    <h1>Listes des recettes</h1>
+    <div>
+        <form action="">
+
+            <div>
+                <div>
+                    <label>Recherche</label>
+                    <input name="search" type="text" class="form-control" placeholder="nom de la recette">
+                </div>
+                <button type="submit">chercher</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div>
+        <form action="">
+
+            <div>
+                <div>
+                    <label>Recherche</label>
+                    <input name="category" type="text" class="form-control" placeholder="nom de la categorie">
+                </div>
+                <button type="submit">chercher</button>
+            </div>
+
+        </form>
+    </div>
+
+    {% if recipes|length == 0 %}
+    <p>aucune recette</p>
+    {% endif %}
+
+    <ul>
+        {% for recipe in recipes %}
+        <li>
+            {{ recipe.title }}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
