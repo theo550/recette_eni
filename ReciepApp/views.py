@@ -1,5 +1,7 @@
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 
+from ReciepApp.graphql_client import graphql_query
 from ReciepApp.models import Recipe
 
 recipesList = [
@@ -10,19 +12,41 @@ recipesList = [
 
 # Create your views here.
 def recipes(request):
-    queryset = Recipe.objects.all()
-    if request.GET.get('search'):
-        queryset = queryset.filter(title__icontains=request.GET.get('search'))
+    search = request.GET.get('search', '')
+    category = request.GET.get('category', '')
 
-    if request.GET.get('category'):
-        queryset = queryset.filter(category__icontains=request.GET.get('category'))
+    query = """
+        query GetRecipes($search: String, $category: String) {
+            recipes(search: $search, category: $category) {
+                id name time description category
+            }
+        }
+    """
+    variables = {"search": search, "category": category}
+    result = graphql_query(query, variables)
 
-    context = {'recipes': queryset}
+    print("GraphQL result:", result)
+
+    if not result.get("data") or result["data"]["recipes"] is None:
+        context = {'recipes': []}
+    else:
+        context = {'recipes': result["data"]["recipes"]}
+
     return render(request, 'recipes.html', context)
 
 def recipe(request, id):
-    queryset = get_object_or_404(Recipe, id=id)
+    query = """
+        query GetRecipe($id: ID!) {
+            recipe(id: $id) {
+                id name time description category
+            }
+        }
+    """
+    result = graphql_query(query, {"id": id})
 
-    context = { 'recipe': queryset }
+    if not result.get("data") or result["data"]["recipe"] is None:
+        raise Http404
+
+    context = {'recipe': result["data"]["recipe"]}
     return render(request, 'recipe.html', context)
 
